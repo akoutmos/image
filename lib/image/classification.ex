@@ -139,7 +139,8 @@ if Image.bumblebee_configured?() do
     ```
 
     """
-    @spec classifier(configuration :: Keyword.t()) :: {Nx.Serving, Keyword.t()}
+    @spec classifier(configuration :: Keyword.t()) ::
+            {Nx.Serving, Keyword.t()} | {:error, Image.error_message()}
     def classifier(classifier \\ Application.get_env(:image, :classifier, [])) do
       Application.ensure_all_started(:exla)
       classifier = Keyword.merge(@default_classifier, classifier)
