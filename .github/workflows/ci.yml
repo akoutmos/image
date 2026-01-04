@@ -29,7 +29,7 @@ jobs:
       # Specify the OTP and Elixir versions to use when building
       # and running the workflow steps.
       # Since Bumblebee required OTP 26 (because of Req/Finch/Telemetry)
-      # we only test on OTP 26 and later. Non-bumblebee installs will 
+      # we only test on OTP 26 and later. Non-bumblebee installs will
       # also work on OTP 25.
       matrix:
         include:
@@ -44,6 +44,8 @@ jobs:
             elixir: "1.17.2-otp-27"
           - otp: "27.2"
             elixir: "1.18.1-otp-27"
+          - otp: "28.3"
+            elixir: "1.19.4-otp-28"
             lint: true
     steps:
     # Step: Setup Elixir + Erlang image as the base.
@@ -84,6 +86,10 @@ jobs:
           ${{ runner.os }}-mix-${{ env.cache-name }}-
           ${{ runner.os }}-mix-
 
+    # Step: Update dependencies
+    - name: Update Ubuntu dependencies
+      run: sudo apt-get update
+
     # Step: Install the dependencies for libvips
     - name: Install libvips build dependencies
       run: sudo apt-get install build-essential meson libwebp-dev libheif-dev libavif-dev libcgif0 libcgif-dev libxml2-dev libfftw3-dev libmagickwand-dev libopenexr-dev liborc-0.4-0 gobject-introspection libgirepository1.0-dev libgsf-1-dev libglib2.0-dev liborc-0.4-dev libpango1.0-dev libpangocairo-1.0-0 libpangoft2-1.0-0 curl xz-utils
@@ -91,7 +97,7 @@ jobs:
     # Install latest libvips
     - name: Get latest version of libvips
       run: |
-        VIPS_LATEST_RELEASE="https://github.com/libvips/libvips/releases/download/v8.16.1/vips-8.16.1.tar.xz"
+        VIPS_LATEST_RELEASE="https://github.com/libvips/libvips/releases/download/v8.18.0/vips-8.18.0.tar.xz"
         echo "VIPS_LATEST_RELEASE=${VIPS_LATEST_RELEASE}" >> $GITHUB_ENV
 
     - name: Cache libvips artifacts
