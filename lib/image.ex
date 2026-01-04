@@ -1084,18 +1084,18 @@ defmodule Image do
   * `options` is a keyword list of options. See `Image.open/2`
     for the list of applicable options.
 
-  ### Notes
-
-  This function is typically *not* the best way to open
-  an image. It requires that the entire image
-  is already loaded into memory which, for most use cases,
-  doest not scale well and consumes far more memory than
-  necessary.
-
-  Since `libvips` is a streaming on-demand architecture,
-  it is most likely that a simple `Image.open/2` call will
-  deliver better resource utilitsation and equal or better
-  performance.
+  > #### Note {: .info}
+  >
+  > This function is typically *not* the best way to open
+  > an image. It requires that the entire image
+  > is already loaded into memory which, for most use cases,
+  > doest not scale well and consumes far more memory than
+  > necessary.
+  >
+  > Since `libvips` is a streaming on-demand architecture,
+  > it is most likely that a simple `Image.open/2` call will
+  > deliver better resource utilitsation and equal or better
+  > performance.
 
   ### Returns
 
@@ -6337,7 +6337,9 @@ defmodule Image do
   with intellectual property concerns in mind
   this function will keep the artist and
   copyright fields if they exist in the original
-  image.
+  image EXIF. Creator/Author/Artist and Copyright in
+  other fields like IPTC and XMP are not considered
+  in the current implementation.
 
   On a 1000x500px image exported from Adobe Lightroom
   with metadata intact, removing the metadata
@@ -6345,8 +6347,9 @@ defmodule Image do
   size due to the removal of most EXIF and all
   IPTC and XMP metadata.
 
-  Note that the minimized metadata is only materialized when
-  the minimized image is saved to a file.
+  > #### Note {: .info}
+  >
+  > the minimized metadata is only materialized when the minimized image is saved.
 
   ### Arguments
 
@@ -6363,13 +6366,26 @@ defmodule Image do
 
   @spec minimize_metadata(image :: Vimage.t()) :: {:ok, Vimage.t()} | {:error, error_message()}
   def minimize_metadata(%Vimage{} = image) do
-    with {:ok, exif} <- exif(image),
-         {:ok, image} <- remove_metadata(image) do
-      Vimage.mutate(image, fn mut_img ->
-        :ok = Exif.put_metadata(mut_img, :copyright, exif.copyright)
-        :ok = Exif.put_metadata(mut_img, :artist, exif.artist)
-      end)
+    case exif(image) do
+      {:ok, exif} ->
+        image
+        |> remove_metadata!()
+        |> put_copyright_and_artist(exif)
+
+      {:error, "No such field"} ->
+        remove_metadata(image)
+
+      other ->
+        other
     end
+  end
+
+  defp put_copyright_and_artist(image, exif) do
+    Vimage.mutate(image, fn mut_img ->
+      if exif[:copyright], do: Exif.put_metadata(mut_img, :copyright, exif[:copyright])
+      if exif[:artist], do: Exif.put_metadata(mut_img, :artist, exif[:artist])
+      :ok
+    end)
   end
 
   @doc """
@@ -6437,7 +6453,7 @@ defmodule Image do
     in an image can be returned with a call to
     `Vix.Vips.Image.header_field_names/1`.
 
-  * Errors removing metadata fields is not propagated
+  * Errors removing metadata fields are not propagated
     into the return for this function. Errors might occur
     when attempting to remove metadata fields that
     do not exist in the image.
@@ -6501,7 +6517,7 @@ defmodule Image do
     in an image can be returned with a call to
     `Vix.Vips.Image.header_field_names/1`.
 
-  * Errors removing metadata fields is not propagated
+  * Errors removing metadata fields are not propagated
     into the return for this function. Errors might occur
     when attempting to remove metadata fields that
     do not exist in the image.
