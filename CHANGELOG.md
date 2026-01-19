@@ -1,5 +1,17 @@
 # Changelog
 
+## Image 0.63.0
+
+This is the changelog for Image version 0.63.0 released on January 19th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-image/image/tags)
+
+### Breaking Changes
+
+* Image is supported on Elixir 1.16 and greater only. Previously support was claimed for Elixir 1.12 and later.
+
+### Bug Fixes
+
+* Fix compiler warnings on Elixir 1.20.
+
 ## Image 0.62.1
 
 This is the changelog for Image version 0.62.1 released on October 23rd, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-image/image/tags)
