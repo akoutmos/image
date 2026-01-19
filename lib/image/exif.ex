@@ -96,7 +96,7 @@ defmodule Image.Exif do
   @spec read_ifd(context :: context()) :: map()
   defp read_ifd({exif, offset, ru} = context) do
     case exif do
-      <<_::binary-size(offset), tag_count::binary-size(2), tags::binary>> ->
+      <<_::binary-size(^offset), tag_count::binary-size(2), tags::binary>> ->
         read_tags(ru.(tag_count), tags, context, :tiff, [])
 
       _ ->
@@ -140,7 +140,7 @@ defmodule Image.Exif do
   defp read_tags(_, _, _, _, result), do: Map.new(result)
 
   def read_exif(exif_offset, {exif, _offset, ru} = context) do
-    <<_::binary-size(exif_offset), count::binary-size(2), tags::binary>> = exif
+    <<_::binary-size(^exif_offset), count::binary-size(2), tags::binary>> = exif
     count = ru.(count)
     read_tags(count, tags, context, :exif, [])
   end
@@ -148,7 +148,7 @@ defmodule Image.Exif do
   @spec read_gps(non_neg_integer(), context()) :: %Gps{}
   defp read_gps(gps_offset, {gps, _offset, ru} = context) do
     case gps do
-      <<_::binary-size(gps_offset), count::binary-size(2), tags::binary>> ->
+      <<_::binary-size(^gps_offset), count::binary-size(2), tags::binary>> ->
         struct(Gps, read_tags(ru.(count), tags, context, :gps, []))
 
       _ ->

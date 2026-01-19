@@ -87,7 +87,7 @@ defmodule Image.MixProject do
       # Scholar for k-means
       if(otp_release() >= 24,
         do: [
-          {:nx, "~> 0.9", optional: true},
+          {:nx, "~> 0.10", optional: true},
           {:nx_image, "~> 0.1", optional: true},
           {:scholar, "~> 0.3", optional: true},
           {:bumblebee, "~> 0.6", optional: true},

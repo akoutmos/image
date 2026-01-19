@@ -21,14 +21,14 @@ defmodule Image.Exif.Tag do
       count > 4 ->
         # + offset
         offset = ru.(value)
-        <<_::binary-size(offset), string::binary-size(length), _::binary>> = exif
+        <<_::binary-size(^offset), string::binary-size(^length), _::binary>> = exif
         string
 
       count == 0 ->
         ""
 
       true ->
-        <<string::binary-size(length), _::binary>> = value
+        <<string::binary-size(^length), _::binary>> = value
         string
     end
   end
@@ -68,12 +68,12 @@ defmodule Image.Exif.Tag do
     values =
       if length > 4 do
         case exif do
-          <<_::binary-size(value), data::binary-size(length), _::binary>> -> data
+          <<_::binary-size(^value), data::binary-size(^length), _::binary>> -> data
           # probably a maker_note or user_comment
           _ -> nil
         end
       else
-        <<data::binary-size(length), _::binary>> = value
+        <<data::binary-size(^length), _::binary>> = value
         data
       end
 
@@ -113,7 +113,7 @@ defmodule Image.Exif.Tag do
 
   defp decode_ratios(data, count, offset, ru, signed) do
     case data do
-      <<_::binary-size(offset), numerator::binary-size(4), denominator::binary-size(4),
+      <<_::binary-size(^offset), numerator::binary-size(4), denominator::binary-size(4),
         rest::binary>> ->
         d = maybe_signed_int(ru.(denominator), signed)
         n = maybe_signed_int(ru.(numerator), signed)
@@ -137,7 +137,7 @@ defmodule Image.Exif.Tag do
   defp read_unsigned_many(<<>>, _size, _ru), do: []
 
   defp read_unsigned_many(data, size, ru) do
-    <<number::binary-size(size), rest::binary>> = data
+    <<number::binary-size(^size), rest::binary>> = data
     [ru.(number) | read_unsigned_many(rest, size, ru)]
   end
 

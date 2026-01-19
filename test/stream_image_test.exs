@@ -14,7 +14,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
     test "Filename from a streamed image is nil" do
       assert nil ==
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.filename()
     end
@@ -24,7 +24,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
       assert {:ok, _image} =
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.thumbnail!(200)
                |> Image.write(out_path)
@@ -32,11 +32,11 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
     test "Stream an image for writing", %{dir: dir} do
       out_path = Temp.path!(suffix: ".jpg", basedir: dir)
-      stream = File.stream!(out_path, [], 2048)
+      stream = File.stream!(out_path, 2048, [])
 
       assert {:ok, _image} =
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.thumbnail!(200)
                |> Image.write(stream, suffix: ".jpg")
@@ -44,11 +44,11 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
     test "Stream an image for writing with invalid writer options", %{dir: dir} do
       out_path = Temp.path!(suffix: ".jpg", basedir: dir)
-      stream = File.stream!(out_path, [], 2048)
+      stream = File.stream!(out_path, 2048, [])
 
       assert {:error, _reason} =
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.thumbnail!(200)
                |> Image.write(stream, suffix: ".invalid")
@@ -56,11 +56,11 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
     test "Stream an image for writing with no suffix provided", %{dir: dir} do
       out_path = Temp.path!(suffix: ".jpg", basedir: dir)
-      stream = File.stream!(out_path, [], 2048)
+      stream = File.stream!(out_path, 2048, [])
 
       assert {:error, _reason} =
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.thumbnail!(200)
                |> Image.write(stream)
@@ -74,7 +74,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
       assert {:ok, _image} =
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.thumbnail!(200)
                |> Image.write(conn, suffix: ".jpg")
@@ -88,7 +88,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
       assert %Plug.Conn{} =
                image_path("Singapore-2016-09-5887.jpg")
-               |> File.stream!([], 2048)
+               |> File.stream!(2048, [])
                |> Image.open!()
                |> Image.thumbnail!(200)
                |> Image.stream!(suffix: ".jpg")
@@ -121,7 +121,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
       test "Streaming from minio into a file stream", %{dir: dir} do
         out_path = Temp.path!(suffix: ".jpg", basedir: dir)
-        stream = File.stream!(out_path, [], 2048)
+        stream = File.stream!(out_path, 2048, [])
 
         assert {:ok, _image} =
                  ExAws.S3.download_file("images", "Hong-Kong-2015-07-1998.jpg", :memory)
@@ -151,7 +151,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
 
         assert {:ok, _} =
                  image_path("Singapore-2016-09-5887.jpg")
-                 |> File.stream!([], 2048)
+                 |> File.stream!(2048, [])
                  |> Image.open!()
                  |> Image.thumbnail!(200)
                  |> Image.stream!(suffix: ".jpg", buffer_size: @s3_buffer_size)
@@ -187,7 +187,7 @@ if match?({:module, _module}, Code.ensure_compiled(Plug)) do
       test "Streaming from a file then into streamed minio with exception" do
         assert_raise Image.Error, ~r"The option :suffix must be provided", fn ->
           image_path("Singapore-2016-09-5887.jpg")
-          |> File.stream!([], 2048)
+          |> File.stream!(2048, [])
           |> Image.open!()
           |> Image.thumbnail!(200)
           |> Image.stream!()

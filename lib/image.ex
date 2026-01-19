@@ -1768,7 +1768,7 @@ defmodule Image do
 
       if IO.iodata_length(bin) + acc_size >= buffer_size do
         size = buffer_size - acc_size
-        <<chunk::binary-size(size), rest::binary>> = bin
+        <<chunk::binary-size(^size), rest::binary>> = bin
         {:cont, IO.iodata_to_binary([acc, chunk]), [rest]}
       else
         {:cont, [acc, bin]}
@@ -7961,11 +7961,11 @@ defmodule Image do
 
     width = width(image)
     height = height(image)
+    min = min(width, height)
+    scale = Kernel./(min, width)
 
     xy = Operation.xyz!(width, height)
     xy = xy - [width / 2.0, height / 2.0]
-
-    scale = min(width, height) / width
     xy = xy * 2.0 / scale
 
     {:ok, index} = Complex.polar(xy)
@@ -8030,12 +8030,14 @@ defmodule Image do
 
     width = width(image)
     height = height(image)
+    min = min(width, height)
+    scale = Kernel./(min, width)
 
     xy = Operation.xyz!(width, height)
     xy = xy * [1.0, 360.0 / height]
 
     {:ok, index} = Complex.rectangular(xy)
-    scale = min(width, height) / width
+
 
     index = index * scale / 2.0
     index = index + [width / 2.0, height / 2.0]

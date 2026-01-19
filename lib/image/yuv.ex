@@ -482,7 +482,7 @@ defmodule Image.YUV do
     y_bytes = width * height
 
     case binary do
-      <<y::bytes-size(y_bytes), u::bytes-size(y_bytes), v::bytes-size(y_bytes)>> ->
+      <<y::bytes-size(^y_bytes), u::bytes-size(^y_bytes), v::bytes-size(^y_bytes)>> ->
         {:ok, [y, u, v]}
 
       _other ->
@@ -495,7 +495,7 @@ defmodule Image.YUV do
     uv_bytes = div(y_bytes, 2)
 
     case binary do
-      <<y::bytes-size(y_bytes), u::bytes-size(uv_bytes), v::bytes-size(uv_bytes)>> ->
+      <<y::bytes-size(^y_bytes), u::bytes-size(^uv_bytes), v::bytes-size(^uv_bytes)>> ->
         {:ok, [y, u, v]}
 
       _other ->
@@ -508,7 +508,7 @@ defmodule Image.YUV do
     uv_bytes = div(y_bytes, 4)
 
     case binary do
-      <<y::bytes-size(y_bytes), u::bytes-size(uv_bytes), v::bytes-size(uv_bytes)>> ->
+      <<y::bytes-size(^y_bytes), u::bytes-size(^uv_bytes), v::bytes-size(^uv_bytes)>> ->
         {:ok, [y, u, v]}
 
       _other ->
